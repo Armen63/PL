@@ -1,70 +1,54 @@
-package com.example.armen.pl.ui.fragment;
+package com.example.armen.pl.db;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.armen.pl.ui.activity.BaseActivity;
+/**
+ * Created by Armen on 7/3/2017.
+ */
 
-
-public abstract class BaseFragment extends Fragment {
-
+public class PlDataBaseHelper extends SQLiteOpenHelper {
     // ===========================================================
     // Constants
     // ===========================================================
+    private static final String LOG_TAG = PlDataBaseHelper.class.getName();
+    private static final String DATABASE_NAME = "TL.DB";
+    private static final int DATABASE_VERSION = 1;
 
     // ===========================================================
     // Fields
     // ===========================================================
-
     // ===========================================================
     // Constructors
     // ===========================================================
+    public PlDataBaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
     // ===========================================================
     // Getter & Setter
     // ===========================================================
-
     // ===========================================================
     // Methods for/from SuperClass
     // ===========================================================
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_USER_TABLE);
     }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + USER_TABLE);
+        onCreate(db);
+    }
     // ===========================================================
     // Listeners, methods for/from Interfaces
     // ===========================================================
-
     // ===========================================================
     // Methods
     // ===========================================================
-
-    protected void hideActionBarIcon() {
-        ((BaseActivity) getActivity()).hideActionBarIcon();
-    }
-
-    protected void showActionBarIcon() {
-        ((BaseActivity) getActivity()).showActionBarIcon();
-    }
-
-    protected void setActionBarIcon() {
-        ((BaseActivity) getActivity()).hideActionBarIcon();
-    }
-
-    protected void setActionBarTitle(String actionBarTitle) {
-        ((BaseActivity) getActivity()).setActionBarTitle(actionBarTitle);
-    }
-
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
 }

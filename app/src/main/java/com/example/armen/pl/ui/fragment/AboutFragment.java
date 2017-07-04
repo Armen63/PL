@@ -1,15 +1,26 @@
 package com.example.armen.pl.ui.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.armen.pl.R;
+import com.example.armen.pl.io.sevice.BroadcastService;
 import com.example.armen.pl.util.Constant;
 
 public class AboutFragment extends BaseFragment implements View.OnClickListener {
+    public static final String mBroadcastStringAction = "com.aca.broadcast.string";
+
+    private TextView mTextView;
+    private IntentFilter mIntentFilter;
+
 
     // ===========================================================
     // Constants
@@ -22,6 +33,9 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener 
     // ===========================================================
 
     private Bundle mArgumentData;
+
+    public AboutFragment() {
+    }
 
     // ===========================================================
     // Constructors
@@ -49,7 +63,34 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(mBroadcastStringAction);
+
+        Intent serviceIntent = new Intent(getActivity(), BroadcastService.class);
+        getContext().startService(serviceIntent);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getContext().registerReceiver(mReceiver, mIntentFilter);
+    }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mTextView.setText(mTextView.getText() + "Broadcast From Service: \n");
+            switch (intent.getAction()) {
+                case mBroadcastStringAction:
+                    mTextView.setText(mTextView.getText() + intent.getStringExtra("Data") + "\n\n");
+                    break;
+            }
+            Intent stopIntent = new Intent(getActivity(), BroadcastService.class);
+            context.stopService(stopIntent);
+
+        }
+    };
+
 
     @Nullable
     @Override
@@ -86,7 +127,7 @@ public class AboutFragment extends BaseFragment implements View.OnClickListener 
     }
 
     private void findViews(View view) {
-
+        mTextView = (TextView) view.findViewById(R.id.tv_fragment_about_data);
     }
 
     public void getData() {

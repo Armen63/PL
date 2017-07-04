@@ -1,9 +1,12 @@
 package com.example.armen.pl.util;
 
-/**
- * Created by Armen on 6/21/2017.
- */
+
 public class Constant {
+
+    public class API {
+        public static final String PRODUCT_LIST = "https://s3-eu-west-1.amazonaws.com/developer-application-test/cart/list";
+        public static final String PRODUCT_ITEM = "https://s3-eu-west-1.amazonaws.com/developer-application-test/cart/1/detail";
+    }
 
     public class Action  {
         public static final String ACTION_UPLOAD = "ACTION_UPLOAD";
@@ -45,7 +48,7 @@ public class Constant {
         public static final String ANDROID_DATA_ROOT = "Android/data/";
         public static final String SD = "file://";
         public static final String SHA = "SHA";
-        public static final String UTF_8 = "UTF_8";
+        public static final String UTF_8 = "UTF-8";
     }
 
     public class Identifier {
@@ -76,5 +79,6 @@ public class Constant {
         public static final String RELEASE = "release";
         public static final String DEBUG = "debug";
     }
+
 
 }
