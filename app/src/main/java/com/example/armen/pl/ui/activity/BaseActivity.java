@@ -1,5 +1,6 @@
 package com.example.armen.pl.ui.activity;
 
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,6 @@ import android.widget.TextView;
 
 import com.example.armen.pl.R;
 
-/**
- * Created by Armen on 6/21/2017.
- */
 
 public abstract class BaseActivity extends AppCompatActivity {
 

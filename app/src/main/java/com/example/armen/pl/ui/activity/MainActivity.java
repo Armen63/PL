@@ -8,21 +8,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.armen.pl.R;
-import com.example.armen.pl.ui.adapter.ProductAdapter;
 import com.example.armen.pl.ui.fragment.AboutFragment;
 import com.example.armen.pl.ui.fragment.ProductListFragment;
 import com.example.armen.pl.util.FragmentTransactionManager;
 
-public class MainActivity extends  BaseActivity  implements View.OnClickListener,
-        NavigationView.OnNavigationItemSelectedListener {
 
-    private RecyclerView recyclerView;
-    private ProductAdapter adapter;
+public class MainActivity extends BaseActivity implements View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener {
 
     // ===========================================================
     // Constants
@@ -59,9 +55,7 @@ public class MainActivity extends  BaseActivity  implements View.OnClickListener
         openScreen(
                 ProductListFragment.newInstance(),
                 R.id.nav_product_list,
-                false
-        );
-
+                false);
     }
 
     @Override
@@ -153,7 +147,8 @@ public class MainActivity extends  BaseActivity  implements View.OnClickListener
         actionBarDrawerToggle.syncState();
     }
 
-    private void openScreen(Fragment fragment, int item, Boolean mustAddToBackStack) {
+    private void openScreen(Fragment fragment, int item, boolean mustAddToBackStack) {
+
         mNavigationView.getMenu().findItem(item).setChecked(true);
 
         FragmentTransactionManager.displayFragment(
@@ -161,7 +156,9 @@ public class MainActivity extends  BaseActivity  implements View.OnClickListener
                 fragment,
                 R.id.fl_main_container,
                 mustAddToBackStack
+
         );
+
     }
 
     // ===========================================================

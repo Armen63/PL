@@ -1,4 +1,4 @@
-package com.example.armen.pl.io.sevice;
+package com.example.armen.pl.io.service;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.entity.ProductResponse;
+import com.example.armen.pl.db.handler.PlQueryHandler;
 import com.example.armen.pl.io.bus.BusProvider;
 import com.example.armen.pl.io.rest.HttpRequestManager;
 import com.example.armen.pl.io.rest.HttpResponseUtil;
@@ -23,37 +24,33 @@ public class PLIntentService extends IntentService {
     // ===========================================================
 
     private static final String LOG_TAG = PLIntentService.class.getSimpleName();
+    private Product mAddProduct;
+
+//    public Product getData(Intent intent) {
+//        String name = intent.getStringExtra(Constant.POJO.NAME);
+//        String priceStr = intent.getStringExtra(Constant.POJO.PRICE);
+//        int price = Integer.parseInt(priceStr);
+//        String description = intent.getStringExtra(Constant.POJO.DESCRIPTION);
+//
+//        mAddProduct = new Product();
+//        mAddProduct.setName(name);
+//        mAddProduct.setPrice(price);
+//        mAddProduct.setDescription(description);
+//        mAddProduct.setImage("https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg");
+//        Log.d(LOG_TAG, " lavaaaaaaaaaaaaaaaaaaaaaaaaaa");
+//        return mAddProduct;
+//    }
 
     private class Extra {
         static final String URL = "PRODUCT_LIST";
         static final String POST_ENTITY = "POST_ENTITY";
-        static final String SUBSCRIBER = "SUBSCRIBER";
         static final String REQUEST_TYPE = "REQUEST_TYPE";
     }
-
-    // ===========================================================
-    // Fields
-    // ===========================================================
-
-    // ===========================================================
-    // Constructors
-    // ===========================================================
 
     public PLIntentService() {
         super(PLIntentService.class.getName());
     }
 
-    // ===========================================================
-    // Getter & Setter
-    // ===========================================================
-
-    // ===========================================================
-    // Listeners, methods for/from Interfaces
-    // ===========================================================
-
-    // ===========================================================
-    // Start/stop commands
-    // ===========================================================
 
     /**
      * @param url         - calling api url
@@ -87,6 +84,8 @@ public class PLIntentService extends IntentService {
         int requestType = intent.getExtras().getInt(Extra.REQUEST_TYPE);
         Log.i(LOG_TAG, requestType + Constant.Symbol.SPACE + url);
 
+        Product getPassedProduct = intent.getExtras().getParcelable("ADD_PRODUCT");
+
         HttpURLConnection connection;
 
         switch (requestType) {
@@ -99,12 +98,13 @@ public class PLIntentService extends IntentService {
                 );
 
                 String jsonList = HttpResponseUtil.parseResponse(connection);
-                Log.d(LOG_TAG, jsonList);
 
                 ProductResponse productResponse = new Gson().fromJson(jsonList, ProductResponse.class);
                 ArrayList<Product> products = productResponse.getProducts();
 
-                // TODO: insert list into DB
+                PlQueryHandler.deleteProducts(this);
+
+                PlQueryHandler.addProducts(this, products);
 
                 BusProvider.getInstance().post(products);
 
@@ -119,27 +119,10 @@ public class PLIntentService extends IntentService {
                 );
 
                 String jsonItem = HttpResponseUtil.parseResponse(connection);
-                Log.d(LOG_TAG, jsonItem);
 
                 Product product = new Gson().fromJson(jsonItem, Product.class);
-
-                // TODO: insert one item into DB
-
-                BusProvider.getInstance().post(product);
-
-
                 break;
 
         }
-
     }
-
-    // ===========================================================
-    // Methods
-    // ===========================================================
-
-    // ===========================================================
-    // Util
-    // ===========================================================
-
 }

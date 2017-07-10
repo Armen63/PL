@@ -4,23 +4,25 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-/**
- * Created by Armen on 6/23/2017.
- */
-
 public class NetworkUtil {
+
+
     // ===========================================================
     // Constants
     // ===========================================================
+
     private static final String LOG_TAG = NetworkUtil.class.getSimpleName();
+
     // ===========================================================
     // Fields
     // ===========================================================
+
     private static NetworkUtil sInstance;
 
     // ===========================================================
     // Constructors
     // ===========================================================
+
     private NetworkUtil() {
     }
 
@@ -34,22 +36,28 @@ public class NetworkUtil {
     // ===========================================================
     // Getter & Setter
     // ===========================================================
+
     // ===========================================================
     // Methods for/from SuperClass
     // ===========================================================
+
     // ===========================================================
     // Listeners, methods for/from Interfaces
     // ===========================================================
+
     // ===========================================================
     // Methods
     // ===========================================================
+
     public boolean isConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
+
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
+
 }

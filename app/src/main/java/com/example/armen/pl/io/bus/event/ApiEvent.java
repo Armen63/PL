@@ -1,6 +1,5 @@
 package com.example.armen.pl.io.bus.event;
 
-
 import android.support.annotation.Nullable;
 
 public class ApiEvent<T> {

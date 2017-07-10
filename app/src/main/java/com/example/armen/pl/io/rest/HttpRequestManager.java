@@ -1,11 +1,12 @@
 package com.example.armen.pl.io.rest;
 
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static com.example.armen.pl.util.Constant.Util.UTF_8;
 
 
 public class HttpRequestManager {
@@ -26,8 +27,8 @@ public class HttpRequestManager {
         HttpURLConnection connection = null;
 
         try {
-            URL ulr = new URL(apiUrl);
-            connection = (HttpURLConnection) ulr.openConnection();
+            URL url = new URL(apiUrl);
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(requestMethod);
             connection.setUseCaches(false);
 

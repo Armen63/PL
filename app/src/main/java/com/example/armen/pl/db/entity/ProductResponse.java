@@ -1,5 +1,6 @@
 package com.example.armen.pl.db.entity;
 
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;

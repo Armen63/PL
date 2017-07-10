@@ -1,14 +1,13 @@
 package com.example.armen.pl.util;
 
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-/**
- * Created by Armen on 6/23/2017.
- */
-
 public class FragmentTransactionManager {
+
     private static final String LOG_TAG = FragmentTransactionManager.class.getSimpleName();
+
     public static void displayFragment(FragmentManager fragmentManager, Fragment fragment,
                                        int view, boolean mustAddToBackStack) {
         if (mustAddToBackStack) {

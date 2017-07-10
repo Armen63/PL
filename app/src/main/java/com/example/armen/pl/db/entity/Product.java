@@ -1,14 +1,10 @@
 package com.example.armen.pl.db.entity;
 
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
-
-/**
- * Created by Armen on 6/23/2017.
- */
-
 
 public class Product implements Parcelable {
 
@@ -28,6 +24,13 @@ public class Product implements Parcelable {
     private String description;
 
     public Product() {
+    }
+
+    public Product(String name, int price, String image, String description) {
+        this.name = name;
+        this.price = price;
+        this.image = image;
+        this.description = description;
     }
 
     public Product(String id, String name, int price, String image, String description) {
@@ -78,6 +81,7 @@ public class Product implements Parcelable {
         this.description = description;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -100,7 +104,7 @@ public class Product implements Parcelable {
         this.description = in.readString();
     }
 
-    public static final Parcelable.Creator<Product> CREATOR = new Parcelable.Creator<Product>() {
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
         @Override
         public Product createFromParcel(Parcel source) {
             return new Product(source);

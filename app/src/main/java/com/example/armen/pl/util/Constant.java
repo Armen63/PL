@@ -79,6 +79,11 @@ public class Constant {
         public static final String RELEASE = "release";
         public static final String DEBUG = "debug";
     }
+    public class POJO{
+        public static final String NAME = "NAME";
+        public static final String PRICE = "PRICE";
+        public static final String DESCRIPTION = "DESCRIPTION";
+    }
 
 
 }

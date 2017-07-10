@@ -1,0 +1,50 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/include_toolbar" />
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <ImageView
+            android:id="@+id/iv_add_product"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@color/gray" />
+
+        <EditText
+            android:id="@+id/et_add_product_name"
+            style="@style/AddProduct"
+            android:hint="name" />
+
+        <EditText
+            android:id="@+id/et_add_product_price"
+            style="@style/AddProduct"
+            android:inputType="number"
+            android:hint="price" />
+
+        <EditText
+            android:id="@+id/et_add_product_description"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:hint="description"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ADD" />
+    </LinearLayout>
+</ScrollView>

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.armen.pl.R;
 import com.example.armen.pl.db.entity.Product;
 
@@ -97,9 +99,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         ViewHolder(View itemView, ArrayList<Product> productArrayList, OnItemClickListener onItemClickListener) {
             super(itemView);
+            this.context = itemView.getContext();
             this.productArrayList = productArrayList;
             this.onItemClickListener = onItemClickListener;
-            this.context = llItemContainer.getContext();
             findViews(itemView);
         }
 
@@ -112,6 +114,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         void bindData() {
 
+            Glide.with(itemView.getContext())
+                    .load(productArrayList.get(getAdapterPosition()).getImage())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(ivProductImage);
+
             tvProductTitle.setText(productArrayList.get(getAdapterPosition()).getName());
 
             tvProductPrice.setText(String.valueOf(productArrayList.get(getAdapterPosition()).getPrice()));
@@ -122,12 +129,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                     onItemClickListener.onItemClick(productArrayList.get(getAdapterPosition()));
                 }
             });
+
+            llItemContainer.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onItemClickListener.onItemLongClick(productArrayList.get(getAdapterPosition()));
+                    return true;
+                }
+            });
         }
     }
 
     public interface OnItemClickListener {
 
         void onItemClick(Product product);
+
+        void onItemLongClick(Product product);
 
     }
 }
