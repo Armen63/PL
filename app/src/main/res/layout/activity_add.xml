@@ -1,50 +1,88 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/include_toolbar" />
+    </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <include layout="@layout/include_toolbar" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        </android.support.design.widget.AppBarLayout>
+                <ImageView
+                    android:id="@+id/iv_add_product"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:background="@android:color/darker_gray"
+                    android:scaleType="centerCrop" />
 
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/product_add_input_layout_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/iv_add_product"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:background="@color/gray" />
+                    <EditText
+                        android:id="@+id/et_add_product_name"
+                        style="@style/AddProduct"
+                        android:hint="name" />
+                </android.support.design.widget.TextInputLayout>
 
-        <EditText
-            android:id="@+id/et_add_product_name"
-            style="@style/AddProduct"
-            android:hint="name" />
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/product_add_input_layout_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/et_add_product_price"
-            style="@style/AddProduct"
-            android:inputType="number"
-            android:hint="price" />
+                    <EditText
+                        android:id="@+id/et_add_product_price"
+                        style="@style/AddProduct"
+                        android:hint="price"
+                        android:inputType="number" />
+                </android.support.design.widget.TextInputLayout>
 
-        <EditText
-            android:id="@+id/et_add_product_description"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:hint="description"
-            android:inputType="text" />
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/product_add_input_layout_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/et_add_product_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:hint="description"
+                        android:inputType="text" />
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+        </ScrollView>
 
         <Button
-            android:id="@+id/btn_add"
+            android:id="@+id/btn_product_add_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD" />
+            android:layout_gravity="bottom"
+            android:layout_marginTop="20dp"
+            android:background="#2E7D32"
+            android:text="Add"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:textColor="@android:color/white" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

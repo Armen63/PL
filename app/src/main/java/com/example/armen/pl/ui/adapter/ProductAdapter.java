@@ -143,8 +143,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public interface OnItemClickListener {
 
         void onItemClick(Product product);
-
         void onItemLongClick(Product product);
-
     }
 }

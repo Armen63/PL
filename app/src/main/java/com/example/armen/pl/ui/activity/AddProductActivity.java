@@ -10,14 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.armen.pl.R;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
-
-import static com.example.armen.pl.db.handler.PlQueryHandler.addProduct;
+import com.example.armen.pl.util.Constant;
 
 public class AddProductActivity extends BaseActivity implements View.OnClickListener ,PlAsyncQueryHandler.AsyncQueryListener{
 
@@ -31,6 +31,7 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
 
     private static final String LOG_TAG = AddProductActivity.class.getSimpleName();
     private static final String ADD_PRODUCT = "ADD_PRODUCT";
+    private static final String EMPTY = "";
 
 
     @Override
@@ -63,13 +64,13 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
 
     private void findViews() {
         mImage = (ImageView) findViewById(R.id.iv_add_product);
-        Glide.with(this).load("https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg")
+        Glide.with(this).load(Constant.API.BANAN)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mImage);
         mEtName = (EditText) findViewById(R.id.et_add_product_name);
         mEtPrice = (EditText) findViewById(R.id.et_add_product_price);
         mEtDescription = (EditText) findViewById(R.id.et_add_product_description);
-        mBtnAdd = (Button) findViewById(R.id.btn_add);
+        mBtnAdd = (Button) findViewById(R.id.btn_product_add_item);
     }
 
     private void setListeners() {
@@ -84,12 +85,17 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_add:
+            case R.id.btn_product_add_item:
+                if(!isValid()){
+                    Toast.makeText(this, "null or empty field", Toast.LENGTH_SHORT).show();
+                    return ;}
                 sendData();
         }
     }
 
     private void sendData() {
+
+
         Intent data = new Intent();
         Integer intPrice = Integer.valueOf(mEtPrice.getText().toString());
         data.putExtra(ADD_PRODUCT,
@@ -97,13 +103,13 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
                         "" + System.currentTimeMillis(),
                         mEtName.getText().toString(),
                         intPrice,
-                        "https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg",
+                        Constant.API.BANAN,
                         mEtDescription.getText().toString())
         );
         // 2nd version
         mProduct = new Product();
         mProduct.setId("" + System.currentTimeMillis());
-        mProduct.setImage("https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg");
+        mProduct.setImage(Constant.API.BANAN);
         mProduct.setName(mEtName.getText().toString());
         mProduct.setPrice(intPrice);
         mProduct.setDescription(mEtDescription.getText().toString());
@@ -111,10 +117,6 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
 
         handler.addProduct(mProduct);
 
-        addProduct(getBaseContext(), new Product("15", mEtName.getText().toString(),
-                intPrice,
-                "https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg",
-                mEtDescription.getText().toString()));
         setResult(RESULT_OK, data);
         finish();
     }
@@ -144,5 +146,21 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onDeleteComplete(int token, Object cookie, int result) {
 
+    }
+
+    private boolean isValid() {
+
+        if (mEtName.getText().toString() == null || mEtName.getText().toString().equals(EMPTY)) {
+            return false;
+        }
+
+        if (mEtPrice.getText().toString() == null || mEtPrice.getText().toString().equals(EMPTY)) {
+            return false;
+        }
+
+        if (mEtDescription.getText().toString() == null || mEtDescription.getText().toString().equals(EMPTY)) {
+            return false;
+        }
+        return true;
     }
 }

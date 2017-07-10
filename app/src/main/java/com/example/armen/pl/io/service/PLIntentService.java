@@ -26,20 +26,6 @@ public class PLIntentService extends IntentService {
     private static final String LOG_TAG = PLIntentService.class.getSimpleName();
     private Product mAddProduct;
 
-//    public Product getData(Intent intent) {
-//        String name = intent.getStringExtra(Constant.POJO.NAME);
-//        String priceStr = intent.getStringExtra(Constant.POJO.PRICE);
-//        int price = Integer.parseInt(priceStr);
-//        String description = intent.getStringExtra(Constant.POJO.DESCRIPTION);
-//
-//        mAddProduct = new Product();
-//        mAddProduct.setName(name);
-//        mAddProduct.setPrice(price);
-//        mAddProduct.setDescription(description);
-//        mAddProduct.setImage("https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg");
-//        Log.d(LOG_TAG, " lavaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//        return mAddProduct;
-//    }
 
     private class Extra {
         static final String URL = "PRODUCT_LIST";

@@ -145,11 +145,9 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
         if (data != null) {
             if(requestCode == REQUEST_CODE && resultCode  == RESULT_OK) {
                 Product product = data.getExtras().getParcelable("ADD_PRODUCT");
-                String name = product.getName();
-                Integer price = product.getPrice();
-                String description = product.getDescription();
-                String image = product.getImage();
-                Log.d(LOG_TAG, name + " " + price + " " + description + " " + image);
+                mProductArrayList.add(product);
+                mRecyclerViewAdapter.notifyDataSetChanged();
+
             }
         }
     }
