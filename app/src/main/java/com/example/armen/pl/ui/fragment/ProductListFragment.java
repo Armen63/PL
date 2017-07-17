@@ -1,31 +1,35 @@
 package com.example.armen.pl.ui.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.armen.pl.R;
 import com.example.armen.pl.db.cursor.CursorReader;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
 import com.example.armen.pl.io.bus.BusProvider;
-import com.example.armen.pl.io.rest.HttpRequestManager;
-import com.example.armen.pl.io.service.PLIntentService;
+import com.example.armen.pl.io.bus.event.ApiEvent;
 import com.example.armen.pl.ui.activity.AddProductActivity;
+import com.example.armen.pl.ui.activity.ProductActivity;
 import com.example.armen.pl.ui.adapter.ProductAdapter;
 import com.example.armen.pl.util.Constant;
 import com.example.armen.pl.util.NetworkUtil;
@@ -34,6 +38,8 @@ import com.google.common.eventbus.Subscribe;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.example.armen.pl.ui.activity.AddProductActivity.ADD_PRODUCT;
+
 
 public class ProductListFragment extends BaseFragment implements View.OnClickListener,
         PlAsyncQueryHandler.AsyncQueryListener, ProductAdapter.OnItemClickListener {
@@ -51,14 +57,12 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     // ===========================================================
 
     private Bundle mArgumentData;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private PlAsyncQueryHandler mTlAsyncQueryHandler;
     private RecyclerView mRv;
     private ProductAdapter mRecyclerViewAdapter;
     private LinearLayoutManager mLlm;
     private ArrayList<Product> mProductArrayList;
-    private TextView mTvAdd;
-    private Product mAddProduct;
-
 
     // ===========================================================
     // Constructors
@@ -97,23 +101,25 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
         findViews(view);
         init();
         setListeners();
-        Log.d("mtav pr", "mtav pr");
-//        getData();
+        getData();
         customizeActionBar();
-
-
         if (NetworkUtil.getInstance().isConnected(getActivity())) {
-            PLIntentService.start(
-                    getActivity(),
-                    Constant.API.PRODUCT_LIST,
-                    HttpRequestManager.RequestType.PRODUCT_LIST
-            );
-        } else {
-            mTlAsyncQueryHandler.getProducts();
-        }
+            loadProductFromDb();
+//            if (mProductArrayList.isEmpty()) {
+//                PLIntentService.start(
+//                        getActivity(),
+//                        Constant.API.PRODUCT_LIST,
+//                        HttpRequestManager.RequestType.PRODUCT_LIST
+//                );
+//            } else
 
-
+        } else
+            loadProductFromDb();
         return view;
+    }
+
+    private void loadProductFromDb() {
+        mTlAsyncQueryHandler.getProducts();
     }
 
     @Override
@@ -121,6 +127,17 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
         super.onDestroyView();
         BusProvider.unregister(this);
     }
+
+    // ===========================================================
+    // Click Listeners
+    // ===========================================================
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        }
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -134,17 +151,17 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
             case R.id.nav_add:
                 Intent intent = new Intent(getContext(), AddProductActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
-                return true;
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-            if(requestCode == REQUEST_CODE && resultCode  == RESULT_OK) {
-                Product product = data.getExtras().getParcelable("ADD_PRODUCT");
+            if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+                Product product = data.getParcelableExtra(ADD_PRODUCT);
                 mProductArrayList.add(product);
                 mRecyclerViewAdapter.notifyDataSetChanged();
 
@@ -153,19 +170,34 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-        }
+    public void onItemClick(Product product, int position) {
+        Intent intent = new Intent(getContext(), ProductActivity.class);
+        intent.putExtra(Constant.Extra.EXTRA_PRODUCT_ID, product.getId());
+        startActivity(intent);
     }
 
     @Override
-    public void onItemClick(Product product) {
-        Log.d(LOG_TAG, product.getName());
+    public void onItemLongClick(Product product, int position) {
+        deleteItem(product, position);
     }
 
-    @Override
-    public void onItemLongClick(Product product) {
-        Log.d(LOG_TAG, product.getName());
+    public void deleteItem(final Product product, final int position) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Delete")
+                .setMessage("A y sure?")
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mTlAsyncQueryHandler.deleteProduct(product, position);
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (dialog != null) {
+                            dialog.dismiss();
+                        }
+                    }
+                })
+                .show();
     }
 
     // ===========================================================
@@ -173,10 +205,17 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     // ===========================================================
 
     @Subscribe
-    public void onEventReceived(ArrayList<Product> products) {
-        mProductArrayList.clear();
-        mProductArrayList.addAll(products);
-        mRecyclerViewAdapter.notifyDataSetChanged();
+    public void onEventReceived(ApiEvent<Object> apiEvent) {
+        if (apiEvent.isSuccess()) {
+            mProductArrayList.clear();
+            mProductArrayList.addAll((ArrayList<Product>) apiEvent.getEventData());
+            mRecyclerViewAdapter.notifyDataSetChanged();
+
+        } else {
+            Toast.makeText(getActivity(), "Something went wrong, please try again",
+                    Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -203,6 +242,13 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
 
     @Override
     public void onDeleteComplete(int token, Object cookie, int result) {
+        switch (token) {
+            case PlAsyncQueryHandler.QueryToken.DELETE_PRODUCT:
+                int position = (int) cookie;
+                mProductArrayList.remove(position);
+                mRecyclerViewAdapter.notifyItemRemoved(position);
+                break;
+        }
 
     }
 
@@ -211,11 +257,27 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     // ===========================================================
 
     private void setListeners() {
+        mSwipeRefreshLayout.setColorSchemeColors(Color.GREEN, Color.RED, Color.BLUE);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (NetworkUtil.getInstance().isConnected(getContext())) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                } else {
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    }, 1000);
+                }
+            }
+        });
     }
 
     private void findViews(View view) {
         mRv = (RecyclerView) view.findViewById(R.id.rv_product_list);
-        mTvAdd = (TextView) view.findViewById(R.id.nav_add);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.sr_product_list);
     }
 
     private void init() {
@@ -240,4 +302,8 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     private void customizeActionBar() {
 
     }
+
+    // ===========================================================
+    // Inner and Anonymous Classes
+    // ===========================================================
 }

@@ -16,6 +16,7 @@ import com.example.armen.pl.db.entity.Product;
 
 import java.util.ArrayList;
 
+
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
 
     // ===========================================================
@@ -126,14 +127,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             llItemContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemClickListener.onItemClick(productArrayList.get(getAdapterPosition()));
+                    onItemClickListener.onItemClick(productArrayList.get(getAdapterPosition()),
+                            getAdapterPosition());
                 }
             });
 
             llItemContainer.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    onItemClickListener.onItemLongClick(productArrayList.get(getAdapterPosition()));
+                    onItemClickListener.onItemLongClick(productArrayList.get(getAdapterPosition()),
+                            getAdapterPosition());
                     return true;
                 }
             });
@@ -142,7 +145,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public interface OnItemClickListener {
 
-        void onItemClick(Product product);
-        void onItemLongClick(Product product);
+        void onItemClick(Product product, int position);
+
+        void onItemLongClick(Product product, int position);
+
     }
 }

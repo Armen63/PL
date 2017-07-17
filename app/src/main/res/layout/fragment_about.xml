@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:clickable="true"
+    android:background="@drawable/login_img"
     android:orientation="vertical">
 
 

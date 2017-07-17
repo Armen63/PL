@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.example.armen.pl.R;
 
-
 public abstract class BaseActivity extends AppCompatActivity {
 
     // ===========================================================

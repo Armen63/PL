@@ -27,8 +27,8 @@ public class HttpRequestManager {
         HttpURLConnection connection = null;
 
         try {
-            URL url = new URL(apiUrl);
-            connection = (HttpURLConnection) url.openConnection();
+            URL ulr = new URL(apiUrl);
+            connection = (HttpURLConnection) ulr.openConnection();
             connection.setRequestMethod(requestMethod);
             connection.setUseCaches(false);
 

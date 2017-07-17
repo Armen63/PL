@@ -19,7 +19,7 @@ import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
 import com.example.armen.pl.util.Constant;
 
-public class AddProductActivity extends BaseActivity implements View.OnClickListener ,PlAsyncQueryHandler.AsyncQueryListener{
+public class AddProductActivity extends BaseActivity implements View.OnClickListener, PlAsyncQueryHandler.AsyncQueryListener {
 
     private ImageView mImage;
     private EditText mEtName;
@@ -30,7 +30,7 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
 
 
     private static final String LOG_TAG = AddProductActivity.class.getSimpleName();
-    private static final String ADD_PRODUCT = "ADD_PRODUCT";
+    public static final String ADD_PRODUCT = "ADD_PRODUCT";
     private static final String EMPTY = "";
 
 
@@ -86,35 +86,39 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_product_add_item:
-                if(!isValid()){
-                    Toast.makeText(this, "null or empty field", Toast.LENGTH_SHORT).show();
-                    return ;}
+                if (!isValid()) {
+                    Toast.makeText(this, "null or empty field(s)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 sendData();
         }
     }
 
     private void sendData() {
 
-
         Intent data = new Intent();
-        Integer intPrice = Integer.valueOf(mEtPrice.getText().toString());
+        Long price = Long.valueOf(mEtPrice.getText().toString());
         data.putExtra(ADD_PRODUCT,
-                new Product(
-                        "" + System.currentTimeMillis(),
+                new Product(System.currentTimeMillis(),
                         mEtName.getText().toString(),
-                        intPrice,
+                        price,
                         Constant.API.BANAN,
-                        mEtDescription.getText().toString())
+                        mEtDescription.getText().toString(),
+                        false,
+                        true)
         );
-        // 2nd version
+        /////
+
         mProduct = new Product();
-        mProduct.setId("" + System.currentTimeMillis());
+        mProduct.setId(System.currentTimeMillis());
         mProduct.setImage(Constant.API.BANAN);
         mProduct.setName(mEtName.getText().toString());
-        mProduct.setPrice(intPrice);
+        mProduct.setPrice(price);
+        mProduct.setDescription(mEtDescription.getText().toString());
+        mProduct.setUserProduct(true);
         mProduct.setDescription(mEtDescription.getText().toString());
         PlAsyncQueryHandler handler = new PlAsyncQueryHandler(getApplicationContext(), this);
-
+//        PlQueryHandler.addProduct(this,mProduct);
         handler.addProduct(mProduct);
 
         setResult(RESULT_OK, data);
@@ -161,6 +165,12 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
         if (mEtDescription.getText().toString() == null || mEtDescription.getText().toString().equals(EMPTY)) {
             return false;
         }
+
+        if (Long.parseLong(mEtPrice.getText().toString()) >= Integer.MAX_VALUE) {
+            Toast.makeText(this, "your price > MAX PRICE", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
 }

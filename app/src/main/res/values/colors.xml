@@ -15,6 +15,7 @@
     <color name="darkOrange">#FFFF8800</color>
     <color name="darkRed">#FFCC0000</color>
     <color name="white">#FFFFFF</color>
+    <color name="color_b9ffffff">#b9ffffff</color>
 
     <color name="hint_color">#CFD8DC</color>
     <color name="background_color">#E0F2F1</color>

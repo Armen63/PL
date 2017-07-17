@@ -8,8 +8,14 @@ import android.net.Uri;
 import com.example.armen.pl.db.PlDataBase;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.provider.UriBuilder;
+import com.example.armen.pl.util.AppUtil;
 
 import java.lang.ref.WeakReference;
+
+/**
+ * Created by simonyan51 on 7/5/17.
+ */
+
 
 public class PlAsyncQueryHandler extends AsyncQueryHandler {
 
@@ -26,6 +32,7 @@ public class PlAsyncQueryHandler extends AsyncQueryHandler {
         public static final int UPDATE_PRODUCT = 104;
         public static final int DELETE_PRODUCT = 105;
         public static final int DELETE_PRODUCTS = 106;
+        public static final int GET_FAVORITE_PRODUCTS = 107;
     }
 
     // ===========================================================
@@ -145,7 +152,7 @@ public class PlAsyncQueryHandler extends AsyncQueryHandler {
                 QueryToken.ADD_PRODUCT,
                 null,
                 UriBuilder.buildProductUri(),
-                PlDataBase.composeValues(product, PlDataBase.PRODUCT_TABLE)
+                PlDataBase.composeValues(product, PlDataBase.ContentValuesType.PRODUCTS)
         );
     }
 
@@ -154,16 +161,16 @@ public class PlAsyncQueryHandler extends AsyncQueryHandler {
                 QueryToken.UPDATE_PRODUCT,
                 null,
                 UriBuilder.buildProductUri(),
-                PlDataBase.composeValues(product, PlDataBase.PRODUCT_TABLE),
+                PlDataBase.composeValues(product, PlDataBase.ContentValuesType.PRODUCTS),
                 PlDataBase.PRODUCT_ID + "=?",
                 new String[]{String.valueOf(product.getId())}
         );
     }
 
-    public synchronized void deleteProduct(Product product) {
+    public synchronized void deleteProduct(Product product, Object cookie) {
         startDelete(
                 QueryToken.DELETE_PRODUCT,
-                null,
+                cookie,
                 UriBuilder.buildProductUri(),
                 PlDataBase.PRODUCT_ID + "=?",
                 new String[]{String.valueOf(product.getId())}
@@ -176,6 +183,18 @@ public class PlAsyncQueryHandler extends AsyncQueryHandler {
                 null,
                 UriBuilder.buildProductUri(),
                 null,
+                null
+        );
+    }
+
+    public void getAllFavoriteProducts() {
+        startQuery(
+                QueryToken.GET_FAVORITE_PRODUCTS,
+                null,
+                UriBuilder.buildProductUri(),
+                PlDataBase.Projection.PRODUCT,
+                PlDataBase.PRODUCT_FAVORITE + "=?",
+                new String[]{String.valueOf(AppUtil.booleanToInt(true))},
                 null
         );
     }

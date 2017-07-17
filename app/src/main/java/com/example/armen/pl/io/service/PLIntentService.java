@@ -9,6 +9,7 @@ import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.entity.ProductResponse;
 import com.example.armen.pl.db.handler.PlQueryHandler;
 import com.example.armen.pl.io.bus.BusProvider;
+import com.example.armen.pl.io.bus.event.ApiEvent;
 import com.example.armen.pl.io.rest.HttpRequestManager;
 import com.example.armen.pl.io.rest.HttpResponseUtil;
 import com.example.armen.pl.util.Constant;
@@ -24,8 +25,6 @@ public class PLIntentService extends IntentService {
     // ===========================================================
 
     private static final String LOG_TAG = PLIntentService.class.getSimpleName();
-    private Product mAddProduct;
-
 
     private class Extra {
         static final String URL = "PRODUCT_LIST";
@@ -33,10 +32,29 @@ public class PLIntentService extends IntentService {
         static final String REQUEST_TYPE = "REQUEST_TYPE";
     }
 
+    // ===========================================================
+    // Fields
+    // ===========================================================
+
+    // ===========================================================
+    // Constructors
+    // ===========================================================
+
     public PLIntentService() {
         super(PLIntentService.class.getName());
     }
 
+    // ===========================================================
+    // Getter & Setter
+    // ===========================================================
+
+    // ===========================================================
+    // Listeners, methods for/from Interfaces
+    // ===========================================================
+
+    // ===========================================================
+    // Start/stop commands
+    // ===========================================================
 
     /**
      * @param url         - calling api url
@@ -68,9 +86,8 @@ public class PLIntentService extends IntentService {
         String url = intent.getExtras().getString(Extra.URL);
         String data = intent.getExtras().getString(Extra.POST_ENTITY);
         int requestType = intent.getExtras().getInt(Extra.REQUEST_TYPE);
-        Log.i(LOG_TAG, requestType + Constant.Symbol.SPACE + url);
 
-        Product getPassedProduct = intent.getExtras().getParcelable("ADD_PRODUCT");
+        Log.i(LOG_TAG, requestType + Constant.Symbol.SPACE + url);
 
         HttpURLConnection connection;
 
@@ -86,13 +103,22 @@ public class PLIntentService extends IntentService {
                 String jsonList = HttpResponseUtil.parseResponse(connection);
 
                 ProductResponse productResponse = new Gson().fromJson(jsonList, ProductResponse.class);
-                ArrayList<Product> products = productResponse.getProducts();
 
-                PlQueryHandler.deleteProducts(this);
+                if (productResponse != null) {
 
-                PlQueryHandler.addProducts(this, products);
+                    ArrayList<Product> products = productResponse.getProducts();
+//                    for (int i = 0; i < products.size(); ++i) {
+//                        products.get(i).setUserProduct(false);
+//                    }
 
-                BusProvider.getInstance().post(products);
+                    PlQueryHandler.addProducts(this, products);
+
+                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_LIST_LOADED, true, products));
+
+                } else {
+                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_LIST_LOADED, false));
+
+                }
 
                 break;
 
@@ -107,8 +133,22 @@ public class PLIntentService extends IntentService {
                 String jsonItem = HttpResponseUtil.parseResponse(connection);
 
                 Product product = new Gson().fromJson(jsonItem, Product.class);
+                PlQueryHandler.updateProductDescription(this, product);
+
+                BusProvider.getInstance().post(product);
+
                 break;
 
         }
+
     }
+
+// ===========================================================
+// Methods
+// ===========================================================
+
+// ===========================================================
+// Util
+// ===========================================================
+
 }

@@ -9,13 +9,13 @@ import com.google.gson.annotations.SerializedName;
 public class Product implements Parcelable {
 
     @SerializedName("product_id")
-    private String id;
+    private long id;
 
     @SerializedName("name")
     private String name;
 
     @SerializedName("price")
-    private int price;
+    private long price;
 
     @SerializedName("image")
     private String image;
@@ -23,29 +23,36 @@ public class Product implements Parcelable {
     @SerializedName("description")
     private String description;
 
+    private boolean isFavorite;
+
+    private boolean isUserProduct;
+
     public Product() {
     }
 
-    public Product(String name, int price, String image, String description) {
-        this.name = name;
-        this.price = price;
-        this.image = image;
-        this.description = description;
-    }
-
-    public Product(String id, String name, int price, String image, String description) {
+    public Product(long id, String name, long price, String image, String description, boolean isFavorite, boolean isUserProduct) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.image = image;
         this.description = description;
+        this.isFavorite = isFavorite;
+        this.isUserProduct = isUserProduct;
     }
 
-    public String getId() {
+    public boolean isUserProduct() {
+        return isUserProduct;
+    }
+
+    public void setUserProduct(boolean userProduct) {
+        isUserProduct = userProduct;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -57,11 +64,11 @@ public class Product implements Parcelable {
         this.name = name;
     }
 
-    public int getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(long price) {
         this.price = price;
     }
 
@@ -81,6 +88,14 @@ public class Product implements Parcelable {
         this.description = description;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
 
     @Override
     public int describeContents() {
@@ -89,19 +104,23 @@ public class Product implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
+        dest.writeLong(this.id);
         dest.writeString(this.name);
-        dest.writeInt(this.price);
+        dest.writeLong(this.price);
         dest.writeString(this.image);
         dest.writeString(this.description);
+        dest.writeByte(this.isFavorite ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.isUserProduct ? (byte) 1 : (byte) 0);
     }
 
     protected Product(Parcel in) {
-        this.id = in.readString();
+        this.id = in.readLong();
         this.name = in.readString();
-        this.price = in.readInt();
+        this.price = in.readLong();
         this.image = in.readString();
         this.description = in.readString();
+        this.isFavorite = in.readByte() != 0;
+        this.isUserProduct = in.readByte() != 0;
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {

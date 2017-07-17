@@ -55,6 +55,7 @@
                     <EditText
                         android:id="@+id/et_add_product_price"
                         style="@style/AddProduct"
+                        android:maxLength="10"
                         android:hint="price"
                         android:inputType="number" />
                 </android.support.design.widget.TextInputLayout>
@@ -68,8 +69,7 @@
                         android:id="@+id/et_add_product_description"
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
-                        android:hint="description"
-                        android:inputType="text" />
+                        android:hint="description" />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
         </ScrollView>

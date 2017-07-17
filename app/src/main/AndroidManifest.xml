@@ -18,18 +18,35 @@
             android:authorities="${applicationId}"
             android:exported="false"/>
 
-        <activity android:name=".ui.activity.MainActivity">
+        <service
+            android:name=".io.service.PLIntentService"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.activity.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".io.service.PLIntentService"
-            android:exported="false" />
-        <activity android:name=".ui.activity.AddProductActivity"></activity>
+        <activity
+            android:name=".ui.activity.ProductActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
+        <activity
+            android:name=".ui.activity.SignInActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.AddProductActivity" />
     </application>
 
 </manifest>

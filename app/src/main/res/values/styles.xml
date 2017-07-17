@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/veggies</item>
+    </style>
+
     <style name="Toolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -22,5 +26,7 @@
         <item name="android:inputType">text</item>
         <item name="android:text">""</item>
     </style>
+
+
 
 </resources>

@@ -4,12 +4,14 @@ package com.example.armen.pl.util;
 public class Constant {
 
     public class API {
+        public static final String HOST = "https://tigransarkisian.github.io";
+        public static final String PRODUCT_LIST = HOST + "/aca_pl/products.json";
+        public static final String PRODUCT_ITEM = HOST + "/aca_pl/products/"; // + id
+        public static final String PRODUCT_ITEM_POSTFIX = "/details.json";
         public static final String BANAN = "https://s3-eu-west-1.amazonaws.com/developer-application-test/images/3.jpg";
-        public static final String PRODUCT_LIST = "https://s3-eu-west-1.amazonaws.com/developer-application-test/cart/list";
-        public static final String PRODUCT_ITEM = "https://s3-eu-west-1.amazonaws.com/developer-application-test/cart/1/detail";
     }
 
-    public class Action  {
+    public class Action {
         public static final String ACTION_UPLOAD = "ACTION_UPLOAD";
     }
 
@@ -19,6 +21,8 @@ public class Constant {
 
     public class Extra {
         public static final String EXTRA_USER = "EXTRA_USER";
+        public static final String EXTRA_PRODUCT = "EXTRA_PRODUCT";
+        public static final String EXTRA_PRODUCT_ID = "EXTRA_PRODUCT_ID";
     }
 
     public class Bundle {
@@ -79,11 +83,6 @@ public class Constant {
     public class Build {
         public static final String RELEASE = "release";
         public static final String DEBUG = "debug";
-    }
-    public class POJO{
-        public static final String NAME = "NAME";
-        public static final String PRICE = "PRICE";
-        public static final String DESCRIPTION = "DESCRIPTION";
     }
 
 
