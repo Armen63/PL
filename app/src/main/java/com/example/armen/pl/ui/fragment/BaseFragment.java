@@ -51,15 +51,12 @@ public abstract class BaseFragment extends Fragment {
     protected void hideActionBarIcon() {
         ((BaseActivity) getActivity()).hideActionBarIcon();
     }
-
     protected void showActionBarIcon() {
         ((BaseActivity) getActivity()).showActionBarIcon();
     }
-
     protected void setActionBarIcon() {
         ((BaseActivity) getActivity()).hideActionBarIcon();
     }
-
     protected void setActionBarTitle(String actionBarTitle) {
         ((BaseActivity) getActivity()).setActionBarTitle(actionBarTitle);
     }

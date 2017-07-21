@@ -74,6 +74,7 @@ public class ProductActivity extends BaseActivity implements
         findViews();
         init();
         getData();
+
     }
 
     @Override
@@ -231,7 +232,8 @@ public class ProductActivity extends BaseActivity implements
     }
 
     private void loadProduct() {
-        if (NetworkUtil.getInstance().isConnected(this) && mProduct != null) {
+        if (NetworkUtil.getInstance().isConnected(this) && mProduct.isUserProduct()) {
+            mPlAsyncQueryHandler.getProducts();
             PLIntentService.start(
                     this,
                     Constant.API.PRODUCT_ITEM + String.valueOf(mProduct.getId()) + Constant.API.PRODUCT_ITEM_POSTFIX,
@@ -273,6 +275,7 @@ public class ProductActivity extends BaseActivity implements
         mEtProductTitle.setText(product.getName());
         mEtProductPrice.setText(String.valueOf(product.getPrice()));
         mEtProductDesc.setText(product.getDescription());
+
     }
 
     // ===========================================================

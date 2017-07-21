@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.armen.pl.R;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
+import com.example.armen.pl.util.AppUtil;
 import com.example.armen.pl.util.Constant;
 
 public class AddProductActivity extends BaseActivity implements View.OnClickListener, PlAsyncQueryHandler.AsyncQueryListener {
@@ -122,6 +123,10 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
         handler.addProduct(mProduct);
 
         setResult(RESULT_OK, data);
+        AppUtil.sendNotification(
+                getBaseContext(),
+                "Added product","Product with name '"  + mProduct.getName()+"' has added",
+                "{1}");
         finish();
     }
 

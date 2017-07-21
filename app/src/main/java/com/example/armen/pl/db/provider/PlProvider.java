@@ -15,9 +15,6 @@ import com.example.armen.pl.db.PlDataBase;
 import com.example.armen.pl.db.PlDataBaseHelper;
 
 
-/**
- * Created by simonyan51 on 7/5/17.
- */
 
 public class PlProvider extends ContentProvider {
 
@@ -96,13 +93,13 @@ public class PlProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case Code.SINGLE_PRODUCT:
                 id = db.insertWithOnConflict(PlDataBase.PRODUCT_TABLE, null, values,
-                        SQLiteDatabase.CONFLICT_REPLACE);
+                        SQLiteDatabase.CONFLICT_IGNORE);
                 contentUri = ContentUris.withAppendedId(UriBuilder.buildProductUri(), id);
                 break;
 
             case Code.ALL_PRODUCTS:
                 id = db.insertWithOnConflict(PlDataBase.PRODUCT_TABLE, null, values,
-                        SQLiteDatabase.CONFLICT_REPLACE);
+                        SQLiteDatabase.CONFLICT_IGNORE);
                 contentUri = ContentUris.withAppendedId(UriBuilder.buildProductUri(), id);
                 break;
 

@@ -23,6 +23,7 @@ public class Constant {
         public static final String EXTRA_USER = "EXTRA_USER";
         public static final String EXTRA_PRODUCT = "EXTRA_PRODUCT";
         public static final String EXTRA_PRODUCT_ID = "EXTRA_PRODUCT_ID";
+        public static final String EXTRA_NOTIFICATION_DATA = "EXTRA_NOTIF" + "_DATA";
     }
 
     public class Bundle {

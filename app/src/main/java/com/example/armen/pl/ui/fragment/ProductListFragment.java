@@ -28,6 +28,8 @@ import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
 import com.example.armen.pl.io.bus.BusProvider;
 import com.example.armen.pl.io.bus.event.ApiEvent;
+import com.example.armen.pl.io.rest.HttpRequestManager;
+import com.example.armen.pl.io.service.PLIntentService;
 import com.example.armen.pl.ui.activity.AddProductActivity;
 import com.example.armen.pl.ui.activity.ProductActivity;
 import com.example.armen.pl.ui.adapter.ProductAdapter;
@@ -42,7 +44,7 @@ import static com.example.armen.pl.ui.activity.AddProductActivity.ADD_PRODUCT;
 
 
 public class ProductListFragment extends BaseFragment implements View.OnClickListener,
-        PlAsyncQueryHandler.AsyncQueryListener, ProductAdapter.OnItemClickListener {
+        PlAsyncQueryHandler.AsyncQueryListener, ProductAdapter.OnItemClickListener,SwipeRefreshLayout.OnRefreshListener {
 
     // ===========================================================
     // Constants
@@ -104,14 +106,14 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
         getData();
         customizeActionBar();
         if (NetworkUtil.getInstance().isConnected(getActivity())) {
-            loadProductFromDb();
-//            if (mProductArrayList.isEmpty()) {
-//                PLIntentService.start(
-//                        getActivity(),
-//                        Constant.API.PRODUCT_LIST,
-//                        HttpRequestManager.RequestType.PRODUCT_LIST
-//                );
-//            } else
+//            loadProductFromDb();
+            if (mProductArrayList.isEmpty()) {
+                PLIntentService.start(
+                        getActivity(),
+                        Constant.API.PRODUCT_LIST,
+                        HttpRequestManager.RequestType.PRODUCT_LIST
+                );
+            } 
 
         } else
             loadProductFromDb();
@@ -278,6 +280,7 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
     private void findViews(View view) {
         mRv = (RecyclerView) view.findViewById(R.id.rv_product_list);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.sr_product_list);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     private void init() {
@@ -301,6 +304,18 @@ public class ProductListFragment extends BaseFragment implements View.OnClickLis
 
     private void customizeActionBar() {
 
+    }
+
+    @Override
+    public void onRefresh() {
+
+
+
+        fetchData();
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    private void fetchData() {
     }
 
     // ===========================================================

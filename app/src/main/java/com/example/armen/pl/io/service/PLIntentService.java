@@ -107,9 +107,9 @@ public class PLIntentService extends IntentService {
                 if (productResponse != null) {
 
                     ArrayList<Product> products = productResponse.getProducts();
-//                    for (int i = 0; i < products.size(); ++i) {
-//                        products.get(i).setUserProduct(false);
-//                    }
+                    for (int i = 0; i < products.size(); ++i) {
+                        products.get(i).setUserProduct(false);
+                    }
 
                     PlQueryHandler.addProducts(this, products);
 
@@ -133,12 +133,15 @@ public class PLIntentService extends IntentService {
                 String jsonItem = HttpResponseUtil.parseResponse(connection);
 
                 Product product = new Gson().fromJson(jsonItem, Product.class);
-                PlQueryHandler.updateProductDescription(this, product);
+                // TODO validation
+                if(product != null) {
+                    PlQueryHandler.updateProductDescription(this, product);
 
-                BusProvider.getInstance().post(product);
+                    BusProvider.getInstance().post(product);
+                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_ITEM_LOADED, false));
 
+                }
                 break;
-
         }
 
     }

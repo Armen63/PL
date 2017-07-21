@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "473603755641",
+    "firebase_url": "https://fcmpl-dabf8.firebaseio.com",
+    "project_id": "fcmpl-dabf8",
+    "storage_bucket": "fcmpl-dabf8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473603755641:android:c3bcd724c39703a8",
+        "android_client_info": {
+          "package_name": "com.example.armen.pl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "473603755641-vs4c3qm8rq57t9kncpbeteuvfiqvuo3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMkjaCWwfthPtsjhYowZRbI6GchDWSIFI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
