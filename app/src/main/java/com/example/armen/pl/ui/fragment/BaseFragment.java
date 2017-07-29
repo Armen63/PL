@@ -7,9 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.example.armen.pl.ui.activity.BaseActivity;
-
 
 public abstract class BaseFragment extends Fragment {
 
@@ -25,6 +23,18 @@ public abstract class BaseFragment extends Fragment {
     // Constructors
     // ===========================================================
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     // ===========================================================
     // Getter & Setter
     // ===========================================================
@@ -32,13 +42,6 @@ public abstract class BaseFragment extends Fragment {
     // ===========================================================
     // Methods for/from SuperClass
     // ===========================================================
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
 
     // ===========================================================
     // Listeners, methods for/from Interfaces
@@ -51,12 +54,15 @@ public abstract class BaseFragment extends Fragment {
     protected void hideActionBarIcon() {
         ((BaseActivity) getActivity()).hideActionBarIcon();
     }
+
     protected void showActionBarIcon() {
         ((BaseActivity) getActivity()).showActionBarIcon();
     }
+
     protected void setActionBarIcon() {
         ((BaseActivity) getActivity()).hideActionBarIcon();
     }
+
     protected void setActionBarTitle(String actionBarTitle) {
         ((BaseActivity) getActivity()).setActionBarTitle(actionBarTitle);
     }
@@ -64,5 +70,4 @@ public abstract class BaseFragment extends Fragment {
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
 }

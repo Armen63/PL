@@ -1,9 +1,7 @@
 package com.example.armen.pl.db;
 
 import android.content.ContentValues;
-
 import com.example.armen.pl.db.entity.Product;
-
 import java.util.ArrayList;
 
 public class PlDataBase {
@@ -36,7 +34,6 @@ public class PlDataBase {
     public static final String PRODUCT_IMAGE = "PRODUCT_IMAGE";
     public static final String PRODUCT_USER = "PRODUCT_USER";
     public static final String PRODUCT_FAVORITE = "PRODUCT_FAVORITE";
-
     public static final String PRODUCT_DESCRIPTION = "PRODUCT_DESCRIPTION";
 
     public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS " + PRODUCT_TABLE

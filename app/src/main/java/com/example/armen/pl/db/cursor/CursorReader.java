@@ -9,10 +9,6 @@ import com.example.armen.pl.util.AppUtil;
 
 import java.util.ArrayList;
 
-/**
- * Created by simonyan51 on 7/5/17.
- */
-
 public class CursorReader {
 
     // ===========================================================
@@ -78,9 +74,6 @@ public class CursorReader {
         return userArrayList;
     }
 
-    /**
-     * UTIL METHODS
-     *************************************************************/
 
     private static Product composeProduct(Cursor cursor) {
         Product product = new Product();

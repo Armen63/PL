@@ -12,11 +12,6 @@ import com.example.armen.pl.util.AppUtil;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Created by simonyan51 on 7/5/17.
- */
-
-
 public class PlAsyncQueryHandler extends AsyncQueryHandler {
 
     // ===========================================================
@@ -202,5 +197,4 @@ public class PlAsyncQueryHandler extends AsyncQueryHandler {
     // ===========================================================
     // Methods helpers
     // ===========================================================
-
 }

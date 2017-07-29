@@ -1,5 +1,6 @@
 package com.example.armen.pl.db.provider;
 
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -14,9 +15,8 @@ import com.example.armen.pl.BuildConfig;
 import com.example.armen.pl.db.PlDataBase;
 import com.example.armen.pl.db.PlDataBaseHelper;
 
-
-
-public class PlProvider extends ContentProvider {
+public class
+PlProvider extends ContentProvider {
 
     // ===========================================================
     // Constants
@@ -93,13 +93,13 @@ public class PlProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case Code.SINGLE_PRODUCT:
                 id = db.insertWithOnConflict(PlDataBase.PRODUCT_TABLE, null, values,
-                        SQLiteDatabase.CONFLICT_IGNORE);
+                        SQLiteDatabase.CONFLICT_REPLACE);
                 contentUri = ContentUris.withAppendedId(UriBuilder.buildProductUri(), id);
                 break;
 
             case Code.ALL_PRODUCTS:
                 id = db.insertWithOnConflict(PlDataBase.PRODUCT_TABLE, null, values,
-                        SQLiteDatabase.CONFLICT_IGNORE);
+                        SQLiteDatabase.CONFLICT_REPLACE);
                 contentUri = ContentUris.withAppendedId(UriBuilder.buildProductUri(), id);
                 break;
 

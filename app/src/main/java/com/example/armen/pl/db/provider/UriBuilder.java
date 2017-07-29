@@ -2,10 +2,6 @@ package com.example.armen.pl.db.provider;
 
 import android.net.Uri;
 
-/**
- * Created by simonyan51 on 7/5/17.
- */
-
 public class UriBuilder {
 
     public static Uri buildProductUri(long id) {

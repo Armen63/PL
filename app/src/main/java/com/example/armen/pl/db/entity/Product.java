@@ -4,23 +4,24 @@ package com.example.armen.pl.db.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.armen.pl.util.Constant;
 import com.google.gson.annotations.SerializedName;
 
 public class Product implements Parcelable {
 
-    @SerializedName("product_id")
+    @SerializedName(Constant.POJO.PRODUCT_ID)
     private long id;
 
-    @SerializedName("name")
+    @SerializedName(Constant.POJO.NAME)
     private String name;
 
-    @SerializedName("price")
+    @SerializedName(Constant.POJO.PRICE)
     private long price;
 
-    @SerializedName("image")
+    @SerializedName(Constant.POJO.IMAGE)
     private String image;
 
-    @SerializedName("description")
+    @SerializedName(Constant.POJO.DESCRIPTION)
     private String description;
 
     private boolean isFavorite;
@@ -28,6 +29,13 @@ public class Product implements Parcelable {
     private boolean isUserProduct;
 
     public Product() {
+    }
+
+    public Product(long id, String name, long price, String description) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.description = description;
     }
 
     public Product(long id, String name, long price, String image, String description, boolean isFavorite, boolean isUserProduct) {

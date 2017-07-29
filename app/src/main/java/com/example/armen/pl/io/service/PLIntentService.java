@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.entity.ProductResponse;
 import com.example.armen.pl.db.handler.PlQueryHandler;
@@ -13,24 +12,16 @@ import com.example.armen.pl.io.bus.event.ApiEvent;
 import com.example.armen.pl.io.rest.HttpRequestManager;
 import com.example.armen.pl.io.rest.HttpResponseUtil;
 import com.example.armen.pl.util.Constant;
+import com.example.armen.pl.util.Preference;
 import com.google.gson.Gson;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
+
 public class PLIntentService extends IntentService {
 
-    // ===========================================================
-    // Constants
-    // ===========================================================
-
     private static final String LOG_TAG = PLIntentService.class.getSimpleName();
-
-    private class Extra {
-        static final String URL = "PRODUCT_LIST";
-        static final String POST_ENTITY = "POST_ENTITY";
-        static final String REQUEST_TYPE = "REQUEST_TYPE";
-    }
 
     // ===========================================================
     // Fields
@@ -61,19 +52,20 @@ public class PLIntentService extends IntentService {
      * @param requestType - string constant that helps us to distinguish what request it is
      * @param postEntity  - POST request entity (json string that must be sent on server)
      */
-
-    public static void start(Context context, String url, String postEntity, int requestType) {
+    public static void start(Context context, String url, String postEntity,
+                             int requestType) {
         Intent intent = new Intent(context, PLIntentService.class);
-        intent.putExtra(Extra.URL, url);
-        intent.putExtra(Extra.REQUEST_TYPE, requestType);
-        intent.putExtra(Extra.POST_ENTITY, postEntity);
+        intent.putExtra(Constant.Extra.URL, url);
+        intent.putExtra(Constant.Extra.REQUEST_TYPE, requestType);
+        intent.putExtra(Constant.Extra.POST_ENTITY, postEntity);
         context.startService(intent);
     }
 
-    public static void start(Context context, String url, int requestType) {
+    public static void start(Context context, String url,
+                             int requestType) {
         Intent intent = new Intent(context, PLIntentService.class);
-        intent.putExtra(Extra.URL, url);
-        intent.putExtra(Extra.REQUEST_TYPE, requestType);
+        intent.putExtra(Constant.Extra.URL, url);
+        intent.putExtra(Constant.Extra.REQUEST_TYPE, requestType);
         context.startService(intent);
     }
 
@@ -83,75 +75,83 @@ public class PLIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String url = intent.getExtras().getString(Extra.URL);
-        String data = intent.getExtras().getString(Extra.POST_ENTITY);
-        int requestType = intent.getExtras().getInt(Extra.REQUEST_TYPE);
-
+        String url = intent.getExtras().getString(Constant.Extra.URL);
+        String data = intent.getExtras().getString(Constant.Extra.POST_ENTITY);
+        int requestType = intent.getExtras().getInt(Constant.Extra.REQUEST_TYPE);
         Log.i(LOG_TAG, requestType + Constant.Symbol.SPACE + url);
 
         HttpURLConnection connection;
 
         switch (requestType) {
-            case HttpRequestManager.RequestType.PRODUCT_LIST:
+            case Constant.RequestType.PRODUCT_LIST:
 
+                // calling API
                 connection = HttpRequestManager.executeRequest(
                         url,
-                        HttpRequestManager.RequestMethod.GET,
+                        Constant.RequestMethod.GET,
                         null
                 );
 
+                // parse API result to get json string
                 String jsonList = HttpResponseUtil.parseResponse(connection);
 
+                // deserialize json string to model
                 ProductResponse productResponse = new Gson().fromJson(jsonList, ProductResponse.class);
 
+                // check server data (null if something went wrong)
                 if (productResponse != null) {
 
+                    // get all products
                     ArrayList<Product> products = productResponse.getProducts();
-                    for (int i = 0; i < products.size(); ++i) {
-                        products.get(i).setUserProduct(false);
+
+                    // restore favorites
+                    for (Product product : products) {
+                        if (Preference.getInstance(getApplicationContext()).
+                                getUserFavorites(String.valueOf(product.getId()))) {
+                            product.setFavorite(true);
+                        }
                     }
 
+                    // add all products into db
                     PlQueryHandler.addProducts(this, products);
 
+                    // post to UI
                     BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_LIST_LOADED, true, products));
 
                 } else {
                     BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_LIST_LOADED, false));
-
                 }
 
                 break;
-
-            case HttpRequestManager.RequestType.PRODUCT_ITEM:
+            case Constant.RequestType.PRODUCT_ITEM:
 
                 connection = HttpRequestManager.executeRequest(
                         url,
-                        HttpRequestManager.RequestMethod.GET,
+                        Constant.RequestMethod.GET,
                         null
                 );
 
                 String jsonItem = HttpResponseUtil.parseResponse(connection);
 
                 Product product = new Gson().fromJson(jsonItem, Product.class);
-                // TODO validation
-                if(product != null) {
+
+                if (product != null) {
                     PlQueryHandler.updateProductDescription(this, product);
+                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_ITEM_LOADED, true, product));
 
-                    BusProvider.getInstance().post(product);
-                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_ITEM_LOADED, false));
-
+                } else {
+                    BusProvider.getInstance().post(new ApiEvent<>(ApiEvent.EventType.PRODUCT_LIST_LOADED, false));
                 }
                 break;
         }
-
     }
 
-// ===========================================================
-// Methods
-// ===========================================================
+    // ===========================================================
+    // Methods
+    // ===========================================================
 
-// ===========================================================
-// Util
-// ===========================================================
+    // ===========================================================
+    // Util
+    // ===========================================================
 
 }

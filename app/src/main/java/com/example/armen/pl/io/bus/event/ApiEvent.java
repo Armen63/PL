@@ -2,11 +2,6 @@ package com.example.armen.pl.io.bus.event;
 
 import android.support.annotation.Nullable;
 
-/**
- * Created by simonyan51 on 7/2/17.
- */
-
-
 public class ApiEvent<T> {
 
     public static class EventType {
@@ -24,11 +19,6 @@ public class ApiEvent<T> {
     public ApiEvent(int eventType, T eventData) {
         this.eventType = eventType;
         this.eventData = eventData;
-    }
-
-    public ApiEvent(int eventType, boolean success) {
-        this.eventType = eventType;
-        this.success = success;
     }
 
     public ApiEvent(int eventType, boolean success, T eventData) {

@@ -1,6 +1,8 @@
 package com.example.armen.pl.io.rest;
 
 
+import com.example.armen.pl.util.Constant;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -8,22 +10,9 @@ import java.net.URL;
 
 import static com.example.armen.pl.util.Constant.Util.UTF_8;
 
-
 public class HttpRequestManager {
 
-    public class RequestType {
-        public static final int PRODUCT_LIST = 1;
-        public static final int PRODUCT_ITEM = 2;
-    }
-
-    public class RequestMethod {
-        public static final String POST = "POST";
-        public static final String GET = "GET";
-        public static final String PUT = "PUT";
-    }
-
     public static HttpURLConnection executeRequest(String apiUrl, String requestMethod, String data) {
-
         HttpURLConnection connection = null;
 
         try {
@@ -33,12 +22,12 @@ public class HttpRequestManager {
             connection.setUseCaches(false);
 
             switch (requestMethod) {
-                case RequestMethod.GET:
+                case Constant.RequestMethod.GET:
                     connection.connect();
                     break;
 
-                case RequestMethod.PUT:
-                case RequestMethod.POST:
+                case Constant.RequestMethod.PUT:
+                case Constant.RequestMethod.POST:
                     connection.setRequestProperty("Content-Type", "application/json");
                     connection.setDoInput(true);
                     connection.setDoOutput(true);
@@ -49,11 +38,9 @@ public class HttpRequestManager {
                     outputStream.close();
                     break;
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return connection;
     }
 }

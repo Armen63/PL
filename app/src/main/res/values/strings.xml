@@ -28,4 +28,21 @@
 
     <string name="msg_edt_error_pass_empty_null">Enter password</string>
     <string name="msg_edt_error_pass_length">too short</string>
+
+    <!--Logout utils-->
+    <string name="logout">Logout</string>
+    <string name="logout_question">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+
+    <!--Notification util-->
+    <string name="add_product">Added product</string>
+    <string name="product_type">Product with name \'</string>
+    <string name="added">\' has added</string>
+
+
+    <!--Data to rotate-->
+    <string name="saved_description">Saved Description</string>
+    <string name="saved_price">Saved Price</string>
+    <string name="saved_name">Saved Name</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.armen.pl.db.entity;
 
 
+import com.example.armen.pl.util.Constant;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class ProductResponse {
 
-    @SerializedName("products")
+    @SerializedName(Constant.POJO.PRODUCTS)
     private ArrayList<Product> products;
 
     public ProductResponse() {

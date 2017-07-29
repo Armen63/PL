@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -41,13 +40,11 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
     // Fields
     // ===========================================================
 
-    private Bundle mArgumentData;
-    private PlAsyncQueryHandler mTlAsyncQueryHandler;
     private RecyclerView mRv;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ProductAdapter mRecyclerViewAdapter;
+    private ProductAdapter mProductAdapter;
     private LinearLayoutManager mLlm;
     private ArrayList<Product> mProductArrayList;
+    private PlAsyncQueryHandler mPlAsyncQueryHandler;
 
     // ===========================================================
     // Constructors
@@ -86,7 +83,6 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
         findViews(view);
         init();
         setListeners();
-        getData();
         customizeActionBar();
         return view;
     }
@@ -94,7 +90,7 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onResume() {
         super.onResume();
-        mTlAsyncQueryHandler.getAllFavoriteProducts();
+        mPlAsyncQueryHandler.getAllFavoriteProducts();
     }
 
     @Override
@@ -116,7 +112,7 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
     @Override
     public void onItemClick(Product product, int position) {
         Intent intent = new Intent(getContext(), ProductActivity.class);
-        intent.putExtra(Constant.Extra.EXTRA_PRODUCT_ID, product.getId());
+        intent.putExtra(Constant.Extra.PRODUCT_ID, product.getId());
         startActivity(intent);
     }
 
@@ -128,9 +124,9 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
                 .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         product.setFavorite(false);
-                        mTlAsyncQueryHandler.updateProduct(product);
+                        mPlAsyncQueryHandler.updateProduct(product);
                         mProductArrayList.remove(product);
-                        mRecyclerViewAdapter.notifyDataSetChanged();
+                        mProductAdapter.notifyDataSetChanged();
 
                     }
                 })
@@ -152,7 +148,7 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
     public void onEventReceived(ArrayList<Product> products) {
         mProductArrayList.clear();
         mProductArrayList.addAll(products);
-        mRecyclerViewAdapter.notifyDataSetChanged();
+        mProductAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -162,14 +158,13 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
                 ArrayList<Product> products = CursorReader.parseProducts(cursor);
                 mProductArrayList.clear();
                 mProductArrayList.addAll(products);
-                mRecyclerViewAdapter.notifyDataSetChanged();
+                mProductAdapter.notifyDataSetChanged();
                 break;
         }
     }
 
     @Override
     public void onInsertComplete(int token, Object cookie, Uri uri) {
-
     }
 
     @Override
@@ -182,7 +177,7 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
             case PlAsyncQueryHandler.QueryToken.DELETE_PRODUCT:
                 int position = (int) cookie;
                 mProductArrayList.remove(position);
-                mRecyclerViewAdapter.notifyItemRemoved(position);
+                mProductAdapter.notifyItemRemoved(position);
                 break;
         }
 
@@ -191,37 +186,21 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
     // ===========================================================
     // Methods
     // ===========================================================
-    public void unFavorite(final Product product, final int position) {
-    }
 
     private void setListeners() {
-//        mSwipeRefreshLayout.setColorSchemeColors(Color.GREEN, Color.RED, Color.BLUE);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                if (NetworkUtil.getInstance().isConnected(getContext())) {
-//                    mSwipeRefreshLayout.setRefreshing(false);
-//                    mRecyclerViewAdapter.notifyDataSetChanged();
-//                } else {
-//                    (new Handler()).postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mSwipeRefreshLayout.setRefreshing(false);
-//                            mRecyclerViewAdapter.notifyDataSetChanged();
-//                        }
-//                    }, 1000);
-//                }
-//            }
-//        });
     }
 
     private void findViews(View view) {
         mRv = (RecyclerView) view.findViewById(R.id.rv_fv_list);
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.sr_favorite_list);
     }
 
+    private void loadData() {
+        mPlAsyncQueryHandler.getAllFavoriteProducts();
+    }
+
+
     private void init() {
-        mTlAsyncQueryHandler = new PlAsyncQueryHandler(getActivity().getApplicationContext(), this);
+        mPlAsyncQueryHandler = new PlAsyncQueryHandler(getActivity().getApplicationContext(), this);
 
         mRv.setHasFixedSize(true);
         mLlm = new LinearLayoutManager(getActivity());
@@ -229,14 +208,8 @@ public class FavoriteFragment extends BaseFragment implements View.OnClickListen
         mRv.setItemAnimator(new DefaultItemAnimator());
         mRv.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         mProductArrayList = new ArrayList<>();
-        mRecyclerViewAdapter = new ProductAdapter(mProductArrayList, this);
-        mRv.setAdapter(mRecyclerViewAdapter);
-    }
-
-    public void getData() {
-        if (getArguments() != null) {
-            mArgumentData = getArguments().getBundle(Constant.Argument.ARGUMENT_DATA);
-        }
+        mProductAdapter = new ProductAdapter(mProductArrayList, this);
+        mRv.setAdapter(mProductAdapter);
     }
 
     private void customizeActionBar() {

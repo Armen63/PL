@@ -11,10 +11,6 @@ import com.example.armen.pl.util.AppUtil;
 
 import java.util.ArrayList;
 
-/**
- * Created by simonyan51 on 7/5/17.
- */
-
 
 public class PlQueryHandler {
 
@@ -47,10 +43,6 @@ public class PlQueryHandler {
     // ===========================================================
     // Methods
     // ===========================================================
-
-    /**
-     * PRODUCT METHODS
-     *************************************************************/
 
     public synchronized static void addProduct(Context context, Product product) {
         context.getContentResolver().insert(

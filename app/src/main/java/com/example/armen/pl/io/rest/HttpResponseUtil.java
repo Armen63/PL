@@ -13,7 +13,6 @@ public class HttpResponseUtil {
     private static final String LOG_TAG = HttpResponseUtil.class.getSimpleName();
 
     public static String parseResponse(HttpURLConnection connection) {
-
         InputStreamReader streamReader = null;
         BufferedReader reader = null;
         String result = null;
@@ -41,7 +40,6 @@ public class HttpResponseUtil {
                 if (connection != null) {
                     connection.disconnect();
                 }
-
                 if (reader != null) {
                     reader.close();
                 }
@@ -52,7 +50,6 @@ public class HttpResponseUtil {
                 e.printStackTrace();
             }
         }
-
         return result;
     }
 }

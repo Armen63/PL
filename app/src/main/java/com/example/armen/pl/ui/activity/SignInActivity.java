@@ -13,11 +13,8 @@ import com.example.armen.pl.R;
 import com.example.armen.pl.io.bus.BusProvider;
 import com.example.armen.pl.util.Preference;
 
-/**
- * Created by Armen on 7/16/2017.
- */
 
-public class SignInActivity  extends BaseActivity implements View.OnClickListener {
+public class SignInActivity extends BaseActivity implements View.OnClickListener {
 
     // ===========================================================
     // Constants
@@ -114,37 +111,14 @@ public class SignInActivity  extends BaseActivity implements View.OnClickListene
     private void grabDataAndSingIn(String mail, String pass) {
         boolean isValidationSucceeded = true;
 
-        // validate email (empty or not)
         if (mail.trim().length() == 0) {
             isValidationSucceeded = false;
             mTilEmail.setError(getString(R.string.msg_edt_error_empty_null));
         }
-
-        // validate email length(  > 8)
-//        if (mail.length() < 8) {
-//            isValidationSucceeded = false;
-//            mTilEmail.setError(getString(R.string.msg_edt_error_pass_length));
-//        }
-
-        // validate email (contain @)
-//        if (!mail.contains("@")) {
-//            isValidationSucceeded = false;
-//            mTilEmail.setError(getString(R.string.msg_edt_error_valid_mail));
-//        }
-
-        // validate password (empty or not)
         if (pass.trim().length() == 0) {
             isValidationSucceeded = false;
             mTilPass.setError(getString(R.string.msg_edt_error_pass_empty_null));
         }
-
-        // validate password length(  > 3)
-//        if (pass.length() < 4) {
-//            isValidationSucceeded = false;
-//            mTilPass.setError(getString(R.string.msg_edt_error_pass_length));
-//        }
-
-        // if required fields are filled up then proceed with login
         if (isValidationSucceeded) {
 
             mTilEmail.setErrorEnabled(false);

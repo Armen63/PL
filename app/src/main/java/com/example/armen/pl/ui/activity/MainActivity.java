@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.view.View;
-
 import com.example.armen.pl.R;
 import com.example.armen.pl.ui.fragment.AboutFragment;
 import com.example.armen.pl.ui.fragment.FavoriteFragment;
@@ -117,6 +116,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                 );
                 break;
 
+
             case R.id.nav_logout:
                 logout();
                 break;
@@ -178,9 +178,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
     private void logout() {
 
         new AlertDialog.Builder(MainActivity.this)
-                .setTitle("logout")
-                .setMessage("A y sure?")
-                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.logout)
+                .setMessage(R.string.logout_question)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Preference.getInstance(MainActivity.this).setUserPass(null);
                         Preference.getInstance(MainActivity.this).setUserPass(null);
@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener,
                         finish();
                     }
                 })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (dialog != null) {
                             dialog.dismiss();

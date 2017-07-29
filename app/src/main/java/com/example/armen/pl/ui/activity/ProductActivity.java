@@ -3,7 +3,9 @@ package com.example.armen.pl.ui.activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +22,7 @@ import com.example.armen.pl.db.cursor.CursorReader;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
 import com.example.armen.pl.io.bus.BusProvider;
-import com.example.armen.pl.io.rest.HttpRequestManager;
+import com.example.armen.pl.io.bus.event.ApiEvent;
 import com.example.armen.pl.io.service.PLIntentService;
 import com.example.armen.pl.util.Constant;
 import com.example.armen.pl.util.NetworkUtil;
@@ -50,9 +52,10 @@ public class ProductActivity extends BaseActivity implements
     private LinearLayout mLlProductEdit;
     private MenuItem mMenuEdit;
     private MenuItem mMenuDone;
-    private MenuItem mMenuUnfav;
-    private MenuItem mMenuFav;
-    private Product mProduct;
+    private MenuItem mMenuUnFavorite;
+    private MenuItem mMenuFavorite;
+    private Bundle mBundle;
+    private Product mProduct = new Product();
     private PlAsyncQueryHandler mPlAsyncQueryHandler;
 
     // ===========================================================
@@ -70,11 +73,20 @@ public class ProductActivity extends BaseActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BusProvider.register(this);
-        findViews();
-        init();
-        getData();
+        if (savedInstanceState == null) {
+            BusProvider.register(this);
+            findViews();
+            init(savedInstanceState);
+            getData();
 
+        } else
+            mProduct = savedInstanceState.getParcelable("product");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPlAsyncQueryHandler.getProducts();
     }
 
     @Override
@@ -94,21 +106,29 @@ public class ProductActivity extends BaseActivity implements
         inflater.inflate(R.menu.menu_product_item, menu);
         mMenuEdit = menu.findItem(R.id.menu_product_edit);
         mMenuDone = menu.findItem(R.id.menu_product_done);
-        mMenuUnfav = menu.findItem(R.id.menu_product_unfav);
-        mMenuFav = menu.findItem(R.id.menu_product_fav);
+        mMenuUnFavorite = menu.findItem(R.id.menu_product_unfav);
+        mMenuFavorite = menu.findItem(R.id.menu_product_fav);
 
-        if (!mProduct.isFavorite()) {
-            mMenuFav.setVisible(false);
-            mMenuUnfav.setVisible(true);
+        if (mProduct.isFavorite()) {
+            mMenuFavorite.setVisible(true);
+            mMenuUnFavorite.setVisible(false);
         } else {
-            mMenuFav.setVisible(true);
-            mMenuUnfav.setVisible(false);
-        }
-        if (!mProduct.isUserProduct()){
-            mMenuEdit.setVisible(false);
+            mMenuFavorite.setVisible(false);
+            mMenuUnFavorite.setVisible(true);
         }
 
+        if (mProduct.isUserProduct()) {
+            if (mBundle != null && mBundle.getBoolean("menuDone")) {
+                mMenuEdit.setVisible(false);
+                mMenuDone.setVisible(true);
+                mMenuFavorite.setVisible(false);
+                mMenuUnFavorite.setVisible(false);
 
+            } else {
+                mMenuEdit.setVisible(true);
+
+            }
+        }
 
         return true;
     }
@@ -125,28 +145,31 @@ public class ProductActivity extends BaseActivity implements
                 finish();
                 return true;
 
+            case R.id.menu_product_edit:
+                mLlProductView.setVisibility(View.GONE);
+                mMenuDone.setVisible(true);
+                mMenuEdit.setVisible(false);
+                mMenuFavorite.setVisible(false);
+                mMenuUnFavorite.setVisible(false);
+                openEditLayout(mProduct);
+                return true;
+
             case R.id.menu_product_fav:
-                mMenuFav.setVisible(false);
-                mMenuUnfav.setVisible(true);
+                mMenuFavorite.setVisible(false);
+                mMenuUnFavorite.setVisible(true);
                 mProduct.setFavorite(false);
                 mPlAsyncQueryHandler.updateProduct(mProduct);
                 return true;
 
             case R.id.menu_product_unfav:
-                mMenuFav.setVisible(true);
-                mMenuUnfav.setVisible(false);
+                mMenuFavorite.setVisible(true);
+                mMenuUnFavorite.setVisible(false);
                 mProduct.setFavorite(true);
                 mPlAsyncQueryHandler.updateProduct(mProduct);
                 return true;
 
-            case R.id.menu_product_edit:
-                mLlProductView.setVisibility(View.GONE);
-                mMenuDone.setVisible(true);
-                mMenuEdit.setVisible(false);
-                openEditLayout(mProduct);
-                return true;
-
             case R.id.menu_product_done:
+                mMenuUnFavorite.setVisible(true);
                 updateProduct(
                         mEtProductTitle.getText().toString(),
                         Integer.parseInt(mEtProductPrice.getText().toString()),
@@ -156,14 +179,25 @@ public class ProductActivity extends BaseActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putParcelable("product", mProduct);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
     // ===========================================================
     // Other Listeners, methods for/from Interfaces
     // ===========================================================
 
     @Subscribe
-    public void onEventReceived(Product product) {
-        mProduct = product;
-        openViewLayout(mProduct);
+    public void onEventReceived(ApiEvent<Object> apiEvent) {
+        switch (apiEvent.getEventType()) {
+            case ApiEvent.EventType.PRODUCT_ITEM_LOADED:
+                mProduct = (Product) apiEvent.getEventData();
+                openProduct(mBundle);
+                openViewLayout(mProduct);
+        }
     }
 
 
@@ -174,24 +208,24 @@ public class ProductActivity extends BaseActivity implements
                 mProduct = CursorReader.parseProduct(cursor);
                 customizeActionBar();
                 loadProduct();
+                openProduct(mBundle);
                 break;
         }
     }
 
     @Override
     public void onInsertComplete(int token, Object cookie, Uri uri) {
+
     }
 
+    @Override
     public void onUpdateComplete(int token, Object cookie, int result) {
         switch (token) {
             case PlAsyncQueryHandler.QueryToken.UPDATE_PRODUCT:
                 mLlProductEdit.setVisibility(View.GONE);
+                mMenuDone.setVisible(false);
                 if (!mProduct.isUserProduct()) {
                     mMenuEdit.setVisible(false);
-                    mMenuDone.setVisible(false);
-                } else {
-                    mMenuDone.setVisible(false);
-                    mMenuEdit.setVisible(true);
                 }
                 openViewLayout(mProduct);
                 break;
@@ -206,8 +240,12 @@ public class ProductActivity extends BaseActivity implements
     // Methods
     // ===========================================================
 
+    private void customizeActionBar() {
+        setActionBarTitle(mProduct.getName());
+    }
+
     private void getData() {
-        long productId = getIntent().getLongExtra(Constant.Extra.EXTRA_PRODUCT_ID, 0);
+        long productId = getIntent().getLongExtra(Constant.Extra.PRODUCT_ID, 0);
         mPlAsyncQueryHandler.getProduct(productId);
     }
 
@@ -223,23 +261,51 @@ public class ProductActivity extends BaseActivity implements
         mEtProductDesc = (EditText) findViewById(R.id.et_product_desc);
     }
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
+        mBundle = savedInstanceState;
         mPlAsyncQueryHandler = new PlAsyncQueryHandler(ProductActivity.this, this);
     }
 
-    private void customizeActionBar() {
-        setActionBarTitle(mProduct.getName());
-    }
-
     private void loadProduct() {
-        if (NetworkUtil.getInstance().isConnected(this) && mProduct.isUserProduct()) {
-            mPlAsyncQueryHandler.getProducts();
+        if (NetworkUtil.getInstance().isConnected(this) && mProduct != null) {
             PLIntentService.start(
                     this,
                     Constant.API.PRODUCT_ITEM + String.valueOf(mProduct.getId()) + Constant.API.PRODUCT_ITEM_POSTFIX,
-                    HttpRequestManager.RequestType.PRODUCT_ITEM
+                    Constant.RequestType.PRODUCT_ITEM
             );
 
+        } else {
+            openViewLayout(mProduct);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.d(LOG_TAG, "onSaveInstanceState");
+
+        if (mMenuDone.isVisible()) {
+            outState.putBoolean("menuDone", true);
+        }
+
+        outState.putParcelable("mProduct", mProduct);
+        outState.putString(getString(R.string.saved_description), String.valueOf(mEtProductDesc.getText()));
+        outState.putString(getString(R.string.saved_price), String.valueOf(mEtProductPrice.getText()));
+        outState.putString(getString(R.string.saved_name),  String.valueOf(mEtProductTitle.getText()));
+
+
+        super.onSaveInstanceState(outState);
+
+    }
+
+    private void openProduct(Bundle savedInstanceState) {
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean("menuDone")) {
+            mProduct = savedInstanceState.getParcelable("mProduct");
+            mProduct.setName(savedInstanceState.getString(String.valueOf(R.string.saved_name)));
+            mProduct.setDescription(savedInstanceState.getString(String.valueOf(R.string.saved_description)));
+            mProduct.setPrice(Long.parseLong(savedInstanceState.getString(String.valueOf(R.string.saved_price))));
+
+            openEditLayout(mProduct);
         } else {
             openViewLayout(mProduct);
         }
@@ -256,26 +322,29 @@ public class ProductActivity extends BaseActivity implements
     }
 
     private void openViewLayout(Product product) {
-        mLlProductView.setVisibility(View.VISIBLE);
-        Glide.with(this)
-                .load(product.getImage())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(mIvProductImage);
-        mTvProductTitle.setText(product.getName());
-        mTvProductPrice.setText(String.valueOf(product.getPrice()));
-        mTvProductDesc.setText(product.getDescription());
+        if (product != null) {
+            mLlProductView.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(product.getImage())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(mIvProductImage);
+            mTvProductTitle.setText(product.getName());
+            mTvProductPrice.setText(String.valueOf(product.getPrice()));
+            mTvProductDesc.setText(product.getDescription());
+        }
     }
 
     private void openEditLayout(Product product) {
-        mLlProductEdit.setVisibility(View.VISIBLE);
-        Glide.with(this)
-                .load(product.getImage())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(mIvProductImage);
-        mEtProductTitle.setText(product.getName());
-        mEtProductPrice.setText(String.valueOf(product.getPrice()));
-        mEtProductDesc.setText(product.getDescription());
-
+        if (product != null) {
+            mLlProductEdit.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .load(product.getImage())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(mIvProductImage);
+            mEtProductTitle.setText(product.getName());
+            mEtProductPrice.setText(String.valueOf(product.getPrice()));
+            mEtProductDesc.setText(product.getDescription());
+        }
     }
 
     // ===========================================================

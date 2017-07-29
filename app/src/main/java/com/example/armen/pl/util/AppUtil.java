@@ -36,8 +36,8 @@ public class AppUtil {
                                         String title, String description, String data) {
 
         // Create an explicit content Intent that starts the main Activity.
-        Intent intent = new Intent(context, MainActivity    .class);
-        intent.putExtra(Constant.Extra.EXTRA_NOTIFICATION_DATA, data);
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(Constant.Extra.NOTIFICATION_DATA, data);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         // Construct a task stack.
@@ -76,5 +76,4 @@ public class AppUtil {
         // Issue the notification
         mNotificationManager.notify(0, builder.build());
     }
-
 }

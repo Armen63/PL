@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,36 +18,76 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.armen.pl.R;
 import com.example.armen.pl.db.entity.Product;
 import com.example.armen.pl.db.handler.PlAsyncQueryHandler;
+import com.example.armen.pl.ui.fragment.ProductListFragment;
 import com.example.armen.pl.util.AppUtil;
 import com.example.armen.pl.util.Constant;
 
 public class AddProductActivity extends BaseActivity implements View.OnClickListener, PlAsyncQueryHandler.AsyncQueryListener {
 
-    private ImageView mImage;
-    private EditText mEtName;
-    private EditText mEtPrice;
-    private EditText mEtDescription;
-    private Button mBtnAdd;
-    private Product mProduct;
-
+    // ===========================================================
+    // Constants
+    // ===========================================================
 
     private static final String LOG_TAG = AddProductActivity.class.getSimpleName();
     public static final String ADD_PRODUCT = "ADD_PRODUCT";
     private static final String EMPTY = "";
+
+    // ===========================================================
+    // Fields
+    // ===========================================================
+
+    private EditText mEtName;
+    private EditText mEtPrice;
+    private EditText mEtDescription;
+    private Button mBtnAdd;
+    private ImageView mImage;
+    private Product mProduct;
+    private PlAsyncQueryHandler mPlAsyncQueryHandler;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         findViews();
+        init();
         setListeners();
         customizeActionBar();
 
     }
 
-    private void customizeActionBar() {
-        setActionBarTitle("Add Product");
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_add;
     }
+
+    // ===========================================================
+    // Click Listeners
+    // ===========================================================
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_product_add_item:
+                if (!isValid()) {
+                    Toast.makeText(this, "null or empty field(s)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                addProduct();
+        }
+    }
+
+    // ===========================================================
+    // Constructors
+    // ===========================================================
+
+    // ===========================================================
+    // Getter & Setter
+    // ===========================================================
+
+    // ===========================================================
+    // Methods for/from SuperClass
+    // ===========================================================
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,9 +104,66 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
         return super.onOptionsItemSelected(item);
     }
 
+    // ===========================================================
+    // Methods
+    // ===========================================================
+
+    private void setListeners() {
+        mBtnAdd.setOnClickListener(this);
+    }
+
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putParcelable("product", mProduct);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    private void addProduct() {
+
+        Intent data = new Intent();
+        Long price = Long.valueOf(mEtPrice.getText().toString());
+        data.putExtra(ADD_PRODUCT,
+                new Product(
+                        System.currentTimeMillis(),
+                        mEtName.getText().toString(),
+                        price,
+                        Constant.API.PRODUCT_ITEM_DEFAULT_IMAGE,
+                        mEtDescription.getText().toString(),
+                        false,
+                        true)
+        );
+
+        mProduct = new Product();
+        mProduct.setId(System.currentTimeMillis());
+        mProduct.setImage(Constant.API.PRODUCT_ITEM_DEFAULT_IMAGE);
+        mProduct.setName(mEtName.getText().toString());
+        mProduct.setPrice(price);
+        mProduct.setDescription(mEtDescription.getText().toString());
+        mProduct.setUserProduct(true);
+
+        mPlAsyncQueryHandler.addProduct(mProduct);
+
+        setResult(RESULT_OK, data);
+        finish();
+        AppUtil.sendNotification(
+                getBaseContext(),
+                getString(R.string.add_product),getString(R.string.product_type)  + mProduct.getName()+getString(R.string.added),
+                "{1}");
+        finish();
+    }
+    private void init() {
+        mPlAsyncQueryHandler = new PlAsyncQueryHandler(this, this);
+    }
+
+    private void customizeActionBar() {
+        setActionBarTitle("Add Product");
+    }
+
     private void findViews() {
         mImage = (ImageView) findViewById(R.id.iv_add_product);
-        Glide.with(this).load(Constant.API.BANAN)
+        Glide.with(this).load(Constant.API.PRODUCT_ITEM_DEFAULT_IMAGE)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mImage);
         mEtName = (EditText) findViewById(R.id.et_add_product_name);
@@ -74,61 +172,9 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
         mBtnAdd = (Button) findViewById(R.id.btn_product_add_item);
     }
 
-    private void setListeners() {
-        mBtnAdd.setOnClickListener(this);
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_add;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_product_add_item:
-                if (!isValid()) {
-                    Toast.makeText(this, "null or empty field(s)", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                sendData();
-        }
-    }
-
-    private void sendData() {
-
-        Intent data = new Intent();
-        Long price = Long.valueOf(mEtPrice.getText().toString());
-        data.putExtra(ADD_PRODUCT,
-                new Product(System.currentTimeMillis(),
-                        mEtName.getText().toString(),
-                        price,
-                        Constant.API.BANAN,
-                        mEtDescription.getText().toString(),
-                        false,
-                        true)
-        );
-        /////
-
-        mProduct = new Product();
-        mProduct.setId(System.currentTimeMillis());
-        mProduct.setImage(Constant.API.BANAN);
-        mProduct.setName(mEtName.getText().toString());
-        mProduct.setPrice(price);
-        mProduct.setDescription(mEtDescription.getText().toString());
-        mProduct.setUserProduct(true);
-        mProduct.setDescription(mEtDescription.getText().toString());
-        PlAsyncQueryHandler handler = new PlAsyncQueryHandler(getApplicationContext(), this);
-//        PlQueryHandler.addProduct(this,mProduct);
-        handler.addProduct(mProduct);
-
-        setResult(RESULT_OK, data);
-        AppUtil.sendNotification(
-                getBaseContext(),
-                "Added product","Product with name '"  + mProduct.getName()+"' has added",
-                "{1}");
-        finish();
-    }
+    // ===========================================================
+    // Other Listeners, methods for/from Interfaces
+    // ===========================================================
 
     @Override
     public void onQueryComplete(int token, Object cookie, Cursor cursor) {
@@ -139,8 +185,8 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
     public void onInsertComplete(int token, Object cookie, Uri uri) {
         switch (token) {
             case PlAsyncQueryHandler.QueryToken.ADD_PRODUCT:
-                Intent result = new Intent();
-                result.putExtra(ADD_PRODUCT, mProduct);
+                Intent result = new Intent(this, ProductListFragment.class);
+                result.putExtra(ADD_PRODUCT, mProduct.getId());
                 setResult(RESULT_OK, result);
                 finish();
                 break;
@@ -175,7 +221,10 @@ public class AddProductActivity extends BaseActivity implements View.OnClickList
             Toast.makeText(this, "your price > MAX PRICE", Toast.LENGTH_SHORT).show();
             return false;
         }
-
         return true;
     }
+
+    // ===========================================================
+    // Inner and Anonymous Classes
+    // ===========================================================
 }

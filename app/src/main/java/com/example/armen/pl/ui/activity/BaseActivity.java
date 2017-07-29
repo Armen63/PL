@@ -1,13 +1,12 @@
 package com.example.armen.pl.ui.activity;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-
 import com.example.armen.pl.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -25,6 +24,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     private TextView mTvToolbarTitle;
     private TextView mTvSubToolbarTitle;
     private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+
 
     // ===========================================================
     // Constructors
@@ -61,12 +62,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     // ===========================================================
 
     private void findViews() {
+        mTabLayout = (TabLayout) findViewById(R.id.ctl);
         mToolbar = (Toolbar) findViewById(R.id.tb);
         if (mToolbar != null) {
             mTvToolbarTitle = (TextView) mToolbar.findViewById(R.id.tv_toolbar_title);
             mTvSubToolbarTitle = (TextView) mToolbar.findViewById(R.id.tv_toolbar_subtitle);
         }
     }
+    @Nullable
+    protected TabLayout getTabLayout() {
+        return mTabLayout;
+    }
+
 
     protected abstract int getLayoutResource();
 
@@ -118,5 +125,4 @@ public abstract class BaseActivity extends AppCompatActivity {
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
-
 }

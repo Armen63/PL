@@ -46,9 +46,21 @@ public class Preference {
         mEditor.putString(PREF_USER_MAIL, userMail);
         mEditor.apply();
     }
+    public void setUserFave(String key,Boolean userFave) {
+        mEditor.putBoolean(key, userFave);
+        mEditor.apply();
+    }
+    public void deleteUserFave(String key) {
+        mEditor.remove(key);
+        mEditor.apply();
+    }
 
     public String getUserMail() {
         return mSharedPreferences.getString(PREF_USER_MAIL, null);
+    }
+
+    public Boolean getUserFavorites(String key) {
+        return mSharedPreferences.getBoolean(key, false);
     }
 
     public void setUserPass(String userName) {
